@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+/* Closet Catalog palette (PLAN.md §6) */
+:root {
+  --linen: #faf7f2;
+  --charcoal: #2b2b2b;
+  --terracotta: #c8664a;
+  --sage: #8fa58c;
+  --line: #e7e1d8;
+}
+
+@theme inline {
+  --color-linen: var(--linen);
+  --color-charcoal: var(--charcoal);
+  --color-terracotta: var(--terracotta);
+  --color-sage: var(--sage);
+  --color-line: var(--line);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-fraunces);
+}
+
+body {
+  background: var(--linen);
+  color: var(--charcoal);
+}
