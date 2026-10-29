@@ -2,7 +2,9 @@
 
 import imageCompression from "browser-image-compression";
 import { useActionState, useRef, useState, useTransition } from "react";
+import type { Area } from "react-easy-crop";
 import { removePhoto, setPhotoUrl, uploadPhoto, type PhotoState } from "../photo-actions";
+import { CropDialog, cropToFile } from "./crop-dialog";
 
 // Shrink big phone photos in the browser before they're sent anywhere.
 async function shrink(file: File) {
@@ -30,12 +32,40 @@ export function PhotoControls({ itemId, hasPhoto }: { itemId: string; hasPhoto: 
     {},
   );
 
-  const onPick = (file: File | undefined) => {
+  // The photo waiting in the crop box (it stays on your device until you save).
+  const [picked, setPicked] = useState<{ file: File; src: string } | null>(null);
+
+  const clearPicked = () => {
+    if (picked) URL.revokeObjectURL(picked.src);
+    setPicked(null);
+    if (fileInput.current) fileInput.current.value = "";
+  };
+
+  const onPick = async (file: File | undefined) => {
     if (!file) return;
     setUploadError(undefined);
+    const src = URL.createObjectURL(file);
+    try {
+      // Make sure this browser can open the photo before showing the crop box.
+      const test = new Image();
+      test.src = src;
+      await test.decode();
+      setPicked({ file, src });
+    } catch {
+      URL.revokeObjectURL(src);
+      setUploadError("Couldn't read that photo. Please try a JPG or PNG.");
+      if (fileInput.current) fileInput.current.value = "";
+    }
+  };
+
+  const onCropped = (area: Area | null) => {
+    if (!picked) return;
+    const { file, src } = picked;
+    setPicked(null);
     startUpload(async () => {
       try {
-        const small = await shrink(file);
+        const chosen = area ? await cropToFile(file, src, area) : file;
+        const small = await shrink(chosen);
         const formData = new FormData();
         formData.set("photo", small, small.name || "photo");
         const result = await uploadPhoto(itemId, formData);
@@ -43,6 +73,7 @@ export function PhotoControls({ itemId, hasPhoto }: { itemId: string; hasPhoto: 
       } catch {
         setUploadError("Couldn't read that photo. Please try a JPG or PNG.");
       } finally {
+        URL.revokeObjectURL(src);
         if (fileInput.current) fileInput.current.value = "";
       }
     });
@@ -54,6 +85,7 @@ export function PhotoControls({ itemId, hasPhoto }: { itemId: string; hasPhoto: 
 
   return (
     <div className="mt-6">
+      {picked && <CropDialog src={picked.src} onDone={onCropped} onCancel={clearPicked} />}
       <p className="label">Photo</p>
       <div className="mt-2 flex flex-wrap gap-2">
         {/* Opens your phone's camera / photo picker. Only the photo you pick is sent. */}
