@@ -3,23 +3,36 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { FORMALITIES, SEASONS, type Category, type Item } from "@/lib/types";
+import type { ItemField } from "@/lib/validation";
 import type { ItemFormState } from "./actions";
 
-const inputClass =
-  "mt-1 w-full border border-line bg-transparent px-3 py-2 focus:border-ink focus:outline-none";
+const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
-function Field({ label, htmlFor, children }: { label: string; htmlFor: string; children: React.ReactNode }) {
+function Field({
+  field,
+  label,
+  error,
+  children,
+}: {
+  field: ItemField;
+  label: string;
+  error?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div>
-      <label htmlFor={htmlFor} className="label block">
+      <label htmlFor={field} className="label block">
         {label}
       </label>
       {children}
+      {error && (
+        <p id={`${field}-error`} className="mt-1 text-sm text-accent">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
-
-const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
 export function ItemForm({
   action,
@@ -32,17 +45,47 @@ export function ItemForm({
   item?: Item;
   cancelHref: string;
 }) {
-  const [state, formAction, pending] = useActionState(action, {});
+  // Count save attempts so the form can be redrawn after each one (see key below).
+  const [state, formAction, pending] = useActionState(
+    async (prev: ItemFormState & { attempt: number }, formData: FormData) => ({
+      ...(await action(prev, formData)),
+      attempt: prev.attempt + 1,
+    }),
+    { attempt: 0 },
+  );
+
+  // After a failed save, show what was typed; otherwise the saved item (or blank).
+  const initial = (field: ItemField) =>
+    state.values?.[field] ?? (item?.[field] == null ? "" : String(item[field]));
+
+  // Props shared by every input: id, name, starting value, styling, and
+  // a link to its error message so screen readers announce it.
+  const fieldProps = (field: ItemField) => {
+    const error = state.errors?.[field];
+    return {
+      id: field,
+      name: field,
+      defaultValue: initial(field),
+      "aria-invalid": error ? true : undefined,
+      "aria-describedby": error ? `${field}-error` : undefined,
+      className: `mt-1 w-full border bg-transparent px-3 py-2 focus:outline-none ${
+        error ? "border-accent focus:border-accent" : "border-line focus:border-ink"
+      }`,
+    };
+  };
 
   return (
-    <form action={formAction} className="grid max-w-xl gap-5">
-      <Field label="Name" htmlFor="name">
-        <input id="name" name="name" required defaultValue={item?.name} className={inputClass} placeholder="Navy wool coat" />
+    // noValidate: skip the browser's own pop-ups so our friendlier messages show instead.
+    // key: React clears a form after each save attempt, and dropdowns would lose their
+    // choice, so a failed save redraws the form filled with what was typed.
+    <form key={state.attempt} action={formAction} noValidate className="grid max-w-xl gap-5">
+      <Field field="name" label="Name *" error={state.errors?.name}>
+        <input {...fieldProps("name")} required placeholder="Navy wool coat" />
       </Field>
 
       <div className="grid grid-cols-2 gap-4">
-        <Field label="Category" htmlFor="category_id">
-          <select id="category_id" name="category_id" required defaultValue={item?.category_id ?? ""} className={inputClass}>
+        <Field field="category_id" label="Category *" error={state.errors?.category_id}>
+          <select {...fieldProps("category_id")} required>
             <option value="" disabled>
               Choose…
             </option>
@@ -53,14 +96,14 @@ export function ItemForm({
             ))}
           </select>
         </Field>
-        <Field label="Color" htmlFor="color">
-          <input id="color" name="color" defaultValue={item?.color ?? ""} className={inputClass} placeholder="Navy" />
+        <Field field="color" label="Color" error={state.errors?.color}>
+          <input {...fieldProps("color")} placeholder="Navy" />
         </Field>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <Field label="Season" htmlFor="season">
-          <select id="season" name="season" required defaultValue={item?.season ?? ""} className={inputClass}>
+        <Field field="season" label="Season *" error={state.errors?.season}>
+          <select {...fieldProps("season")} required>
             <option value="" disabled>
               Choose…
             </option>
@@ -71,8 +114,8 @@ export function ItemForm({
             ))}
           </select>
         </Field>
-        <Field label="Formality" htmlFor="formality">
-          <select id="formality" name="formality" defaultValue={item?.formality ?? ""} className={inputClass}>
+        <Field field="formality" label="Formality" error={state.errors?.formality}>
+          <select {...fieldProps("formality")}>
             <option value="">Not set</option>
             {FORMALITIES.map((f) => (
               <option key={f} value={f}>
@@ -83,13 +126,15 @@ export function ItemForm({
         </Field>
       </div>
 
-      <Field label="Brand" htmlFor="brand">
-        <input id="brand" name="brand" defaultValue={item?.brand ?? ""} className={inputClass} placeholder="Everlane" />
+      <Field field="brand" label="Brand" error={state.errors?.brand}>
+        <input {...fieldProps("brand")} placeholder="Everlane" />
       </Field>
 
-      <Field label="Notes" htmlFor="notes">
-        <textarea id="notes" name="notes" rows={3} defaultValue={item?.notes ?? ""} className={inputClass} placeholder="Runs small; dry clean only" />
+      <Field field="notes" label="Notes" error={state.errors?.notes}>
+        <textarea {...fieldProps("notes")} rows={3} placeholder="Runs small; dry clean only" />
       </Field>
+
+      <p className="text-xs text-muted">* Required</p>
 
       {state.error && (
         <p role="alert" className="border-l-2 border-accent bg-accent/5 px-3 py-2 text-sm text-accent">

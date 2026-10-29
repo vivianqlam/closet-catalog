@@ -3,36 +3,26 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { readItemValues, validateItem, type ItemErrors, type ItemValues } from "@/lib/validation";
 
-export type ItemFormState = { error?: string };
+export type ItemFormState = {
+  error?: string;
+  errors?: ItemErrors;
+  // What was typed, so the form can show it again after a failed save.
+  values?: ItemValues;
+};
 
-// Turns the submitted form into a row for the items table.
-// Blank optional fields are saved as empty (null), not as "".
-function readItemForm(formData: FormData) {
-  const text = (key: string) => {
-    const value = String(formData.get(key) ?? "").trim();
-    return value === "" ? null : value;
-  };
-  return {
-    name: text("name") ?? "",
-    category_id: Number(formData.get("category_id")),
-    color: text("color"),
-    season: text("season"),
-    formality: text("formality"),
-    brand: text("brand"),
-    notes: text("notes"),
-  };
-}
+const FIX_FIELDS = "Please fix the highlighted fields.";
 
 export async function createItem(_prev: ItemFormState, formData: FormData): Promise<ItemFormState> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("items")
-    .insert(readItemForm(formData))
-    .select("id")
-    .single();
+  const values = readItemValues(formData);
+  const result = validateItem(values);
+  if (!result.ok) return { error: FIX_FIELDS, errors: result.errors, values };
 
-  if (error) return { error: "Couldn't save this item. Please check the fields and try again." };
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("items").insert(result.row).select("id").single();
+
+  if (error) return { error: "Couldn't save this item. Please try again.", values };
 
   revalidatePath("/closet");
   redirect(`/closet/items/${data.id}`);
@@ -43,10 +33,14 @@ export async function updateItem(
   _prev: ItemFormState,
   formData: FormData,
 ): Promise<ItemFormState> {
-  const supabase = await createClient();
-  const { error } = await supabase.from("items").update(readItemForm(formData)).eq("id", id);
+  const values = readItemValues(formData);
+  const result = validateItem(values);
+  if (!result.ok) return { error: FIX_FIELDS, errors: result.errors, values };
 
-  if (error) return { error: "Couldn't save your changes. Please check the fields and try again." };
+  const supabase = await createClient();
+  const { error } = await supabase.from("items").update(result.row).eq("id", id);
+
+  if (error) return { error: "Couldn't save your changes. Please try again.", values };
 
   revalidatePath("/closet");
   redirect(`/closet/items/${id}`);
