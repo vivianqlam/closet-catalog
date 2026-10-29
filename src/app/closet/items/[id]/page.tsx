@@ -11,8 +11,9 @@ import { PhotoControls } from "./photo-controls";
 
 const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
-export default async function ItemPage({ params }: PageProps<"/closet/items/[id]">) {
+export default async function ItemPage({ params, searchParams }: PageProps<"/closet/items/[id]">) {
   const { id } = await params;
+  const photoFailed = (await searchParams).photo === "failed";
   const supabase = await createClient();
   const [{ data: item }, { data: star }] = await Promise.all([
     supabase
@@ -69,6 +70,11 @@ export default async function ItemPage({ params }: PageProps<"/closet/items/[id]
             ))}
           </dl>
 
+          {photoFailed && !item.photo_path && (
+            <p role="alert" className="mt-6 border-l-2 border-accent bg-accent/5 px-3 py-2 text-sm text-accent">
+              Your item was saved, but the photo didn&apos;t upload. Please try again below.
+            </p>
+          )}
           <PhotoControls itemId={item.id} hasPhoto={Boolean(item.photo_path || item.photo_url)} />
 
           {item.notes && <p className="mt-4 text-sm whitespace-pre-line text-muted">{item.notes}</p>}

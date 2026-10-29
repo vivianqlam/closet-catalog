@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { PHOTO_BUCKET } from "@/lib/photos";
+import { PHOTO_BUCKET, savePhoto } from "@/lib/photos";
 import { createClient } from "@/lib/supabase/server";
 import { readItemValues, validateItem, type ItemErrors, type ItemValues } from "@/lib/validation";
 
@@ -25,8 +25,16 @@ export async function createItem(_prev: ItemFormState, formData: FormData): Prom
 
   if (error) return { error: "Couldn't save this item. Please try again.", values };
 
+  // Optional photo picked on the Add item form (already cropped and shrunk).
+  // If it fails, the item is still saved and its page says so.
+  const photo = formData.get("photo");
+  let photoFailed = false;
+  if (photo instanceof File && photo.size > 0) {
+    photoFailed = Boolean((await savePhoto(supabase, { id: data.id, photo_path: null }, photo)).error);
+  }
+
   revalidatePath("/closet");
-  redirect(`/closet/items/${data.id}`);
+  redirect(`/closet/items/${data.id}${photoFailed ? "?photo=failed" : ""}`);
 }
 
 export async function updateItem(
