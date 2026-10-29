@@ -1,5 +1,6 @@
 "use server";
 
+import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -77,5 +78,23 @@ export async function setPacked(tripId: string, itemId: string, packed: boolean)
     .update({ packed })
     .eq("trip_id", tripId)
     .eq("item_id", itemId);
+  refresh(tripId);
+}
+
+// Turns on the read-only link. Each time sharing is turned on, a brand-new
+// secret token is made, so an old link never comes back to life.
+export async function startSharing(tripId: string) {
+  const supabase = await createClient();
+  await supabase
+    .from("trips")
+    .update({ is_shared: true, share_token: randomBytes(18).toString("base64url") })
+    .eq("id", tripId);
+  refresh(tripId);
+}
+
+// Turns the link off right away: the token is erased, so the old link shows nothing.
+export async function stopSharing(tripId: string) {
+  const supabase = await createClient();
+  await supabase.from("trips").update({ is_shared: false, share_token: null }).eq("id", tripId);
   refresh(tripId);
 }
