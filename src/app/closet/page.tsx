@@ -4,9 +4,10 @@ import { closetHref, readFilters, searchPattern } from "@/lib/closet-filters";
 import type { Category, Item } from "@/lib/types";
 import { FilterBar } from "./filter-bar";
 import { StarButton } from "./star-button";
-import { Swatch } from "./swatch";
+import { signedPhotoUrls } from "@/lib/photos";
+import { ItemImage } from "./item-image";
 
-type GridItem = Pick<Item, "id" | "name" | "color" | "brand" | "category_id">;
+type GridItem = Pick<Item, "id" | "name" | "color" | "brand" | "category_id" | "photo_path" | "photo_url">;
 
 export default async function ClosetPage({ searchParams }: PageProps<"/closet">) {
   const filters = readFilters(await searchParams);
@@ -14,7 +15,9 @@ export default async function ClosetPage({ searchParams }: PageProps<"/closet">)
 
   // Search, season, formality and sort run in the database. Category and
   // Starred are applied below so each tab can show how many items match.
-  let query = supabase.from("items").select("id, name, color, brand, category_id");
+  let query = supabase
+    .from("items")
+    .select("id, name, color, brand, category_id, photo_path, photo_url");
   const pattern = searchPattern(filters.q);
   if (pattern) query = query.or(`name.ilike.${pattern},brand.ilike.${pattern}`);
   if (filters.season === "all-season") query = query.eq("season", "all-season");
@@ -43,6 +46,7 @@ export default async function ClosetPage({ searchParams }: PageProps<"/closet">)
     : filters.category
       ? matching.filter((item) => item.category_id === filters.category)
       : matching;
+  const photoUrls = await signedPhotoUrls(supabase, shown.map((item) => item.photo_path));
   const categoryName = (id: number) => categories?.find((c) => c.id === id)?.name ?? "";
   const countFor = (id: number) => matching.filter((item) => item.category_id === id).length;
   const narrowed = Boolean(filters.q || filters.season || filters.formality);
@@ -131,8 +135,13 @@ export default async function ClosetPage({ searchParams }: PageProps<"/closet">)
           {shown.map((item) => (
             <li key={item.id} className="relative">
               <Link href={`/closet/items/${item.id}`} className="group block">
-                <div className="flex aspect-square items-center justify-center bg-tile transition group-hover:-translate-y-1">
-                  <Swatch color={item.color} />
+                <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-tile transition group-hover:-translate-y-1">
+                  <ItemImage
+                    uploadedSrc={item.photo_path && photoUrls.get(item.photo_path)}
+                    linkSrc={item.photo_url}
+                    color={item.color}
+                    alt=""
+                  />
                 </div>
                 <p className="mt-3 text-sm font-medium group-hover:text-accent">{item.name}</p>
                 <p className="label mt-0.5">
