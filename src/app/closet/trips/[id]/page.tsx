@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { signedPhotoUrls } from "@/lib/photos";
@@ -8,6 +9,7 @@ import { ConfirmDelete } from "../../confirm-delete";
 import { ItemImage } from "../../item-image";
 import { addToTrip, deleteTrip, removeFromTrip } from "../actions";
 import { PackedCheckbox } from "./packed-checkbox";
+import { SharePanel } from "./share-panel";
 
 type ClosetItem = Pick<Item, "id" | "name" | "color" | "season" | "category_id" | "photo_path" | "photo_url">;
 
@@ -56,6 +58,11 @@ export default async function TripPage({ params, searchParams }: PageProps<"/clo
     />
   );
 
+  // The full share address, built from the address this page was opened on.
+  const host = (await headers()).get("host");
+  const protocol = host?.startsWith("localhost") ? "http" : "https";
+  const shareUrl = trip.is_shared && trip.share_token ? `${protocol}://${host}/share/${trip.share_token}` : null;
+
   const details = [trip.trip_type, trip.climate].filter(Boolean).map((v) => capitalize(v!));
   const dates = formatTripDates(trip.start_date, trip.end_date);
 
@@ -87,6 +94,8 @@ export default async function TripPage({ params, searchParams }: PageProps<"/clo
           />
         </div>
       </div>
+
+      <SharePanel tripId={trip.id} shareUrl={shareUrl} />
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_1fr]">
         <div>
