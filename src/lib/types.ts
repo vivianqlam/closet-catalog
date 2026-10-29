@@ -25,6 +25,7 @@ export type Item = {
   brand: string | null;
   notes: string | null;
   photo_path: string | null;
+  photo_url: string | null;
   times_worn: number;
   last_worn_on: string | null;
   created_at: string;

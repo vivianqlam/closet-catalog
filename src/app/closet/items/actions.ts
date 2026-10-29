@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { PHOTO_BUCKET } from "@/lib/photos";
 import { createClient } from "@/lib/supabase/server";
 import { readItemValues, validateItem, type ItemErrors, type ItemValues } from "@/lib/validation";
 
@@ -48,7 +49,10 @@ export async function updateItem(
 
 export async function deleteItem(id: string) {
   const supabase = await createClient();
+  const { data: item } = await supabase.from("items").select("photo_path").eq("id", id).maybeSingle();
   await supabase.from("items").delete().eq("id", id);
+  // Remove the uploaded photo too, so no orphaned files stay in storage.
+  if (item?.photo_path) await supabase.storage.from(PHOTO_BUCKET).remove([item.photo_path]);
   revalidatePath("/closet");
   redirect("/closet");
 }

@@ -2,10 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Category, Item } from "@/lib/types";
-import { Swatch } from "../../swatch";
+import { signedPhotoUrls } from "@/lib/photos";
+import { ItemImage } from "../../item-image";
 import { woreIt } from "../actions";
 import { StarButton } from "../../star-button";
 import { DeleteButton } from "./delete-button";
+import { PhotoControls } from "./photo-controls";
 
 const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
@@ -21,6 +23,7 @@ export default async function ItemPage({ params }: PageProps<"/closet/items/[id]
     supabase.from("stars").select("item_id").eq("item_id", id).maybeSingle(),
   ]);
   if (!item) notFound();
+  const photoUrls = await signedPhotoUrls(supabase, [item.photo_path]);
 
   const details = [
     ["Category", item.categories.name],
@@ -38,8 +41,14 @@ export default async function ItemPage({ params }: PageProps<"/closet/items/[id]
       </Link>
 
       <div className="mt-4 grid border border-line md:grid-cols-[1fr_380px]">
-        <div className="flex aspect-square items-center justify-center bg-tile md:aspect-auto md:min-h-[480px]">
-          <Swatch color={item.color} size="lg" />
+        <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-tile md:aspect-auto md:min-h-[480px]">
+          <ItemImage
+            uploadedSrc={item.photo_path && photoUrls.get(item.photo_path)}
+            linkSrc={item.photo_url}
+            color={item.color}
+            alt={item.name}
+            size="lg"
+          />
         </div>
 
         <aside className="flex flex-col border-t border-line p-6 md:border-t-0 md:border-l">
@@ -59,6 +68,8 @@ export default async function ItemPage({ params }: PageProps<"/closet/items/[id]
               </div>
             ))}
           </dl>
+
+          <PhotoControls itemId={item.id} hasPhoto={Boolean(item.photo_path || item.photo_url)} />
 
           {item.notes && <p className="mt-4 text-sm whitespace-pre-line text-muted">{item.notes}</p>}
 
