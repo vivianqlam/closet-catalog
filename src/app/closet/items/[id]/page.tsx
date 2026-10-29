@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Category, Item } from "@/lib/types";
 import { Swatch } from "../../swatch";
 import { woreIt } from "../actions";
+import { StarButton } from "../../star-button";
 import { DeleteButton } from "./delete-button";
 
 const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
@@ -11,11 +12,14 @@ const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slic
 export default async function ItemPage({ params }: PageProps<"/closet/items/[id]">) {
   const { id } = await params;
   const supabase = await createClient();
-  const { data: item } = await supabase
-    .from("items")
-    .select("*, categories(name)")
-    .eq("id", id)
-    .maybeSingle<Item & { categories: Pick<Category, "name"> }>();
+  const [{ data: item }, { data: star }] = await Promise.all([
+    supabase
+      .from("items")
+      .select("*, categories(name)")
+      .eq("id", id)
+      .maybeSingle<Item & { categories: Pick<Category, "name"> }>(),
+    supabase.from("stars").select("item_id").eq("item_id", id).maybeSingle(),
+  ]);
   if (!item) notFound();
 
   const details = [
@@ -39,8 +43,13 @@ export default async function ItemPage({ params }: PageProps<"/closet/items/[id]
         </div>
 
         <aside className="flex flex-col border-t border-line p-6 md:border-t-0 md:border-l">
-          <p className="label">{item.categories.name}</p>
-          <h1 className="mt-1 text-2xl font-medium tracking-tight">{item.name}</h1>
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <p className="label">{item.categories.name}</p>
+              <h1 className="mt-1 text-2xl font-medium tracking-tight">{item.name}</h1>
+            </div>
+            <StarButton itemId={item.id} itemName={item.name} starred={Boolean(star)} />
+          </div>
 
           <dl className="mt-6 divide-y divide-line border-y border-line">
             {details.map(([label, value]) => (

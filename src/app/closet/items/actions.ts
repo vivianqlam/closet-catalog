@@ -72,3 +72,15 @@ export async function woreIt(id: string) {
     .eq("id", id);
   revalidatePath(`/closet/items/${id}`);
 }
+
+// Star or unstar an item. One row in the stars table means "starred".
+export async function toggleStar(itemId: string, starred: boolean) {
+  const supabase = await createClient();
+  if (starred) {
+    await supabase.from("stars").delete().eq("item_id", itemId);
+  } else {
+    await supabase.from("stars").insert({ item_id: itemId });
+  }
+  revalidatePath("/closet");
+  revalidatePath(`/closet/items/${itemId}`);
+}
