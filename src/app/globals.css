@@ -1,25 +1,36 @@
 @import "tailwindcss";
 
-/* Closet Catalog palette (PLAN.md §6) */
+/* Closet Catalog palette, borrowed from github.com/tandpfun/wardrobe (MIT).
+   This replaces the linen/terracotta palette in PLAN.md §6; see Plan vs Reality. */
 :root {
-  --linen: #faf7f2;
-  --charcoal: #2b2b2b;
-  --terracotta: #c8664a;
-  --sage: #8fa58c;
-  --line: #e7e1d8;
+  --paper: #f4f0e8;
+  --ink: #191919;
+  --muted: #66625d;
+  --line: #cfc8bc;
+  --accent: #6e302e;
+  --tile: #ebe5da;
 }
 
 @theme inline {
-  --color-linen: var(--linen);
-  --color-charcoal: var(--charcoal);
-  --color-terracotta: var(--terracotta);
-  --color-sage: var(--sage);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
   --color-line: var(--line);
-  --font-sans: var(--font-inter);
-  --font-serif: var(--font-fraunces);
+  --color-accent: var(--accent);
+  --color-tile: var(--tile);
+  --font-sans: var(--font-instrument-sans);
 }
 
 body {
-  background: var(--linen);
-  color: var(--charcoal);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* Small uppercase label used for field names, tabs and metadata. */
+@utility label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
