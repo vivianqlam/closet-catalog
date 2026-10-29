@@ -4,35 +4,10 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { FORMALITIES, SEASONS, type Category, type Item } from "@/lib/types";
 import type { ItemField } from "@/lib/validation";
+import { Field, inputProps } from "../form-field";
 import type { ItemFormState } from "./actions";
 
 const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
-
-function Field({
-  field,
-  label,
-  error,
-  children,
-}: {
-  field: ItemField;
-  label: string;
-  error?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <label htmlFor={field} className="label block">
-        {label}
-      </label>
-      {children}
-      {error && (
-        <p id={`${field}-error`} className="mt-1 text-sm text-accent">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
 
 export function ItemForm({
   action,
@@ -58,21 +33,7 @@ export function ItemForm({
   const initial = (field: ItemField) =>
     state.values?.[field] ?? (item?.[field] == null ? "" : String(item[field]));
 
-  // Props shared by every input: id, name, starting value, styling, and
-  // a link to its error message so screen readers announce it.
-  const fieldProps = (field: ItemField) => {
-    const error = state.errors?.[field];
-    return {
-      id: field,
-      name: field,
-      defaultValue: initial(field),
-      "aria-invalid": error ? true : undefined,
-      "aria-describedby": error ? `${field}-error` : undefined,
-      className: `mt-1 w-full border bg-transparent px-3 py-2 focus:outline-none ${
-        error ? "border-accent focus:border-accent" : "border-line focus:border-ink"
-      }`,
-    };
-  };
+  const fieldProps = (field: ItemField) => inputProps(field, initial(field), state.errors?.[field]);
 
   return (
     // noValidate: skip the browser's own pop-ups so our friendlier messages show instead.

@@ -4,9 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import type { Category, Item } from "@/lib/types";
 import { signedPhotoUrls } from "@/lib/photos";
 import { ItemImage } from "../../item-image";
-import { woreIt } from "../actions";
+import { deleteItem, woreIt } from "../actions";
 import { StarButton } from "../../star-button";
-import { DeleteButton } from "./delete-button";
+import { ConfirmDelete } from "../../confirm-delete";
 import { PhotoControls } from "./photo-controls";
 
 const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
@@ -92,7 +92,11 @@ export default async function ItemPage({ params }: PageProps<"/closet/items/[id]
             >
               Edit
             </Link>
-            <DeleteButton id={item.id} name={item.name} />
+            <ConfirmDelete
+              name={item.name}
+              description="This removes it from your closet and from any trips."
+              action={deleteItem.bind(null, item.id)}
+            />
           </div>
         </aside>
       </div>
