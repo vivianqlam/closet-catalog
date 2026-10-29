@@ -1,21 +1,10 @@
 "use client";
 
-import imageCompression from "browser-image-compression";
 import { useActionState, useRef, useState, useTransition } from "react";
 import type { Area } from "react-easy-crop";
 import { removePhoto, setPhotoUrl, uploadPhoto, type PhotoState } from "../photo-actions";
-import { CropDialog, cropToFile } from "./crop-dialog";
-
-// Shrink big phone photos in the browser before they're sent anywhere.
-async function shrink(file: File) {
-  const fileType = file.type === "image/png" || file.type === "image/webp" ? file.type : "image/jpeg";
-  return imageCompression(file, {
-    maxSizeMB: 1,
-    maxWidthOrHeight: 1600,
-    fileType,
-    useWebWorker: true,
-  });
-}
+import { CropDialog, cropToFile } from "../crop-dialog";
+import { UNREADABLE_PHOTO, openPhoto, shrink } from "../photo-tools";
 
 export function PhotoControls({ itemId, hasPhoto }: { itemId: string; hasPhoto: boolean }) {
   const fileInput = useRef<HTMLInputElement>(null);
@@ -44,16 +33,11 @@ export function PhotoControls({ itemId, hasPhoto }: { itemId: string; hasPhoto: 
   const onPick = async (file: File | undefined) => {
     if (!file) return;
     setUploadError(undefined);
-    const src = URL.createObjectURL(file);
-    try {
-      // Make sure this browser can open the photo before showing the crop box.
-      const test = new Image();
-      test.src = src;
-      await test.decode();
-      setPicked({ file, src });
-    } catch {
-      URL.revokeObjectURL(src);
-      setUploadError("Couldn't read that photo. Please try a JPG or PNG.");
+    // Make sure this browser can open the photo before showing the crop box.
+    const src = await openPhoto(file);
+    if (src) setPicked({ file, src });
+    else {
+      setUploadError(UNREADABLE_PHOTO);
       if (fileInput.current) fileInput.current.value = "";
     }
   };
@@ -71,7 +55,7 @@ export function PhotoControls({ itemId, hasPhoto }: { itemId: string; hasPhoto: 
         const result = await uploadPhoto(itemId, formData);
         if (result.error) setUploadError(result.error);
       } catch {
-        setUploadError("Couldn't read that photo. Please try a JPG or PNG.");
+        setUploadError(UNREADABLE_PHOTO);
       } finally {
         URL.revokeObjectURL(src);
         if (fileInput.current) fileInput.current.value = "";
