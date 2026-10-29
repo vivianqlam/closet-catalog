@@ -13,7 +13,7 @@ export function ItemImage({
   linkSrc?: string | null;
   color: string | null;
   alt: string;
-  size?: "md" | "lg";
+  size?: "sm" | "md" | "lg";
 }) {
   if (uploadedSrc) {
     // Phone photos fill the tile.

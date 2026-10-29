@@ -3,10 +3,12 @@
 export const SEASONS = ["spring", "summer", "fall", "winter", "all-season"] as const;
 export const FORMALITIES = ["casual", "smart casual", "business", "formal"] as const;
 export const CLIMATES = ["hot", "warm", "mild", "cold", "snow"] as const;
+export const TRIP_TYPES = ["leisure", "business", "wedding", "trek", "conference", "recruiting"] as const;
 
 export type Season = (typeof SEASONS)[number];
 export type Formality = (typeof FORMALITIES)[number];
 export type Climate = (typeof CLIMATES)[number];
+export type TripType = (typeof TRIP_TYPES)[number];
 
 export type Category = {
   id: number;

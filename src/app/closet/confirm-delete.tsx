@@ -1,10 +1,18 @@
 "use client";
 
 import { useRef } from "react";
-import { deleteItem } from "../actions";
 
 // Delete with an "Are you sure?" step, using the browser's built-in dialog element.
-export function DeleteButton({ id, name }: { id: string; name: string }) {
+// Used for both items and trips.
+export function ConfirmDelete({
+  name,
+  description,
+  action,
+}: {
+  name: string;
+  description: string;
+  action: () => Promise<void>;
+}) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   return (
@@ -25,9 +33,7 @@ export function DeleteButton({ id, name }: { id: string; name: string }) {
         <h2 id="delete-title" className="text-lg font-medium">
           Delete &ldquo;{name}&rdquo;?
         </h2>
-        <p className="mt-2 text-sm text-muted">
-          Are you sure? This removes it from your closet and from any trips. It can&apos;t be undone.
-        </p>
+        <p className="mt-2 text-sm text-muted">Are you sure? {description} It can&apos;t be undone.</p>
         <div className="mt-6 flex justify-end gap-3">
           <button
             type="button"
@@ -36,7 +42,7 @@ export function DeleteButton({ id, name }: { id: string; name: string }) {
           >
             Keep it
           </button>
-          <form action={deleteItem.bind(null, id)}>
+          <form action={action}>
             <button type="submit" className="rounded-full bg-accent px-5 py-2 text-sm font-medium text-paper hover:bg-ink">
               Yes, delete
             </button>
