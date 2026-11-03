@@ -1,6 +1,6 @@
 # Database schema
 
-Closet Catalog stores everything in a **Supabase Postgres** database. The SQL that built it is in [`supabase/migrations/`](supabase/migrations/), run in order (0001 → 0004). All four have been run on the live database.
+Closet Catalog stores everything in a **Supabase Postgres** database. The SQL that built it is in [`supabase/migrations/`](supabase/migrations/), run in order (0001 → 0005). 0001–0004 have been run on the live database; 0005 (Activewear) is waiting for Vivian to run it.
 
 **The big idea: privacy is enforced by the database itself.** Every table has Row Level Security (RLS) turned on. RLS rules are like a bouncer on each table: even if the app asked for someone else's data by mistake, the database would hand back nothing. The [data isolation test](docs/tests.md) checks this against the real database.
 
@@ -9,7 +9,7 @@ Closet Catalog stores everything in a **Supabase Postgres** database. The SQL th
 | Table | What it holds | Who can see a row |
 |---|---|---|
 | `users` | One row per account | Only that user |
-| `categories` | The 6 fixed categories (Tops, Bottoms…) | Everyone (no private data) |
+| `categories` | The 7 fixed categories (Tops, Bottoms…) | Everyone (no private data) |
 | `items` | One row per piece of clothing | Only its owner |
 | `trips` | One row per trip | Only its owner (plus the share link, see below) |
 | `trip_items` | Which items are packed for which trip | Only the trip's owner |
@@ -62,7 +62,7 @@ A shared, pre-filled list. The app never adds or changes categories.
 | `name` | text | Required, unique |
 | `sort_order` | small number | The order they appear in menus and the chart |
 
-**Contents:** 1 Tops, 2 Bottoms, 3 Dresses, 4 Outerwear, 5 Shoes, 6 Accessories.
+**Contents:** 1 Tops, 2 Bottoms, 3 Dresses, 4 Outerwear, 5 Shoes, 6 Accessories, 7 Activewear (added in 0005).
 
 **Privacy rules:** anyone can read them. Nobody can change them through the app.
 
@@ -161,3 +161,4 @@ Both are "security definer" functions, which means they run with the database ow
 | `photo_path` for uploads only | Added `photo_url` too, so an item can use a store's product photo instead |
 | `display_name` on users | Column exists, but the app doesn't ask for or show a name |
 | Share link via a server-side lookup | Built as the `get_shared_trip` database function, plus `is_shared_photo` for photos |
+| 6 categories | Added a 7th, **Activewear**, once real workout pieces were imported (migration 0005) |
