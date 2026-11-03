@@ -27,8 +27,17 @@ The agent opened Issue #33 and branch `feature/activewear-import`:
 - **This repo is public.** My item list, email and store photos shouldn't be on GitHub, so they stay in the ignored `imports/` folder. Only the category migration and the docs are committed.
 - **One "photo" was really a WebP file named .jpg, and one was 2560px wide.** The agent converted every photo to a real JPEG, at most 1200px, all under 250 KB, so they fit the bucket's 2 MB, JPEG/PNG/WebP rule.
 
+> **Me:** can we edit some of the photos to just the item? I want it to look standard across all items despite what the website has
+
+The agent used the Mac's built-in subject cut-out (Apple Vision) to remove each background, then centered the item on a square tile in the app's beige (#EDE6DA). Product shots came out clean. Photos with a model still show the model, because the tool can't separate a garment from the person wearing it.
+
+## More things that went sideways
+
+- **Wrong email.** The import looked me up by my personal email, but my app account uses my school email. Listing every account (`select id, email from public.users`) caught it before anything ran. That also showed that the only photo folder in storage belonged to the test-a account, not me.
+- **Supabase warned "creates a table without RLS."** It was a false alarm: the import only adds rows to `items`, which already has RLS on. I clicked "Run and enable RLS", which changed nothing.
+
 ## How it was checked
 
 - The 0005 migration uses `on conflict do nothing`, so running it twice is harmless.
 - The import uses fixed item ids, so running it twice is also harmless. It links a photo only if that file is actually in storage, and it ends with a count to check (74 items, 59 with photos).
-- The SQL hasn't been run yet. Vivian runs it.
+- Vivian ran it on Nov 3, 2026. The final check said 74 items, 59 with photos.

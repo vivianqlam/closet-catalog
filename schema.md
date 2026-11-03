@@ -1,6 +1,6 @@
 # Database schema
 
-Closet Catalog stores everything in a **Supabase Postgres** database. The SQL that built it is in [`supabase/migrations/`](supabase/migrations/), run in order (0001 → 0005). 0001–0004 have been run on the live database; 0005 (Activewear) is waiting for Vivian to run it.
+Closet Catalog stores everything in a **Supabase Postgres** database. The SQL that built it is in [`supabase/migrations/`](supabase/migrations/), run in order (0001 → 0005). All five have been run on the live database.
 
 **The big idea: privacy is enforced by the database itself.** Every table has Row Level Security (RLS) turned on. RLS rules are like a bouncer on each table: even if the app asked for someone else's data by mistake, the database would hand back nothing. The [data isolation test](docs/tests.md) checks this against the real database.
 

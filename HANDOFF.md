@@ -41,9 +41,9 @@ Build Closet Catalog the professional way:
 | #26 | Optional photo on the Add item form | prompts/photo-on-add.md |
 | #30 | Tests: data isolation + dashboard stat | prompts/tests.md |
 
-Migrations 0001–0004 in `supabase/migrations/` have been run on the live database. **0005 (Activewear category, Issue #33) is waiting for Vivian to run it.**
+All five SQL migrations in `supabase/migrations/` (0001–0005) have been run on the live database. 0005 (Activewear category, Issue #33) was run on Nov 3, 2026.
 
-**Real closet import (Issue #33):** Vivian chose 74 items to keep (out of 114 from Instinct's 5-year purchase list). The import SQL, 59 store photos and a step-by-step HOW-TO are in `imports/closet-2026-11/`, which is git-ignored because this repo is public. Never commit that folder.
+**Real closet import (Issue #33): done Nov 3, 2026.** Vivian chose 74 items to keep (out of 114 from Instinct's 5-year purchase list). They're in her live closet: 59 have store photos, cut out onto the app's beige tile, and 15 have no photo yet. Her app account uses her **Berkeley** email, not her personal one. The import SQL, photos and HOW-TO are in `imports/closet-2026-11/`, which is git-ignored because this repo is public. Never commit that folder.
 
 ## Tests: done (PR #30, Issue #27)
 
