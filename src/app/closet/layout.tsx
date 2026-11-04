@@ -13,7 +13,7 @@ export default function ClosetLayout({ children }: LayoutProps<"/closet">) {
           <div className="flex items-center gap-2">
             <Link
               href="/closet/items/new"
-              className="rounded-full bg-ink px-4 py-1.5 text-sm font-medium whitespace-nowrap text-paper hover:bg-accent"
+              className="rounded-full bg-accent px-4 py-1.5 text-sm font-medium whitespace-nowrap text-white hover:bg-accent-hover"
             >
               + Add item
             </Link>

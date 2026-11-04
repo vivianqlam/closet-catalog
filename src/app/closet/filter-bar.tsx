@@ -88,7 +88,7 @@ export function FilterBar({ filters }: { filters: ClosetFilters }) {
         ))}
       </select>
 
-      <button type="submit" className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-paper hover:bg-accent">
+      <button type="submit" className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover">
         Search
       </button>
       {active && (

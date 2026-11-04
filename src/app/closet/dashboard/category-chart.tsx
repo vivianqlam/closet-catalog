@@ -2,9 +2,9 @@
 
 import { Bar, BarChart, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-// One series, so one color: a lighter step of the burgundy accent that reads
-// clearly against the paper background (checked with the dataviz palette validator).
-const BAR = "#9c4a43";
+// One series, so one color: the lighter oxblood step (--accent-hover), which
+// reads clearly against the paper background.
+const BAR = "#8a1c30";
 const INK = "#191919";
 const MUTED = "#66625d";
 const LINE = "#cfc8bc";

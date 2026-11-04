@@ -100,7 +100,7 @@ export function CropDialog({
           type="button"
           disabled={!area}
           onClick={() => onDone(area)}
-          className="rounded-full bg-ink px-5 py-2 text-sm font-medium text-paper hover:bg-accent disabled:opacity-60"
+          className="rounded-full bg-accent px-5 py-2 text-sm font-medium text-white hover:bg-accent-hover disabled:opacity-60"
         >
           Save photo
         </button>

@@ -1,13 +1,16 @@
 @import "tailwindcss";
 
-/* Closet Catalog palette, borrowed from github.com/tandpfun/wardrobe (MIT).
-   This replaces the linen/terracotta palette in PLAN.md §6; see Plan vs Reality. */
+/* Closet Catalog palette: oxblood + ballet pink (Issue #37). The layout and
+   neutrals started from github.com/tandpfun/wardrobe (MIT); see Plan vs Reality. */
 :root {
-  --paper: #f4f0e8;
+  --paper: #fbf5f2;
   --ink: #191919;
   --muted: #66625d;
-  --line: #cfc8bc;
-  --accent: #6e302e;
+  --line: #d9cfc9;
+  --accent: #6e1423;
+  --accent-hover: #8a1c30;
+  --ballet: #f4c6cf;
+  --blush: #f7d3da;
   --tile: #ebe5da;
 }
 
@@ -17,8 +20,12 @@
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-ballet: var(--ballet);
+  --color-blush: var(--blush);
   --color-tile: var(--tile);
   --font-sans: var(--font-instrument-sans);
+  --font-display: var(--font-shrikhand);
 }
 
 body {
@@ -33,4 +40,10 @@ body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+/* Marker-pen highlight behind a word in a headline. */
+@utility highlight {
+  background: linear-gradient(transparent 58%, var(--blush) 58%, var(--blush) 94%, transparent 94%);
+  padding: 0 0.15em;
 }

@@ -36,7 +36,7 @@ export function AuthForm({ mode }: { mode: "signup" | "login" }) {
         action={formAction}
         className="w-full max-w-sm border border-line bg-paper p-8"
       >
-        <h1 className="text-3xl font-medium tracking-tight">{copy.title}</h1>
+        <h1 className="text-3xl font-display">{copy.title}</h1>
 
         <label className="label mt-6 block" htmlFor="email">
           Email
@@ -78,7 +78,7 @@ export function AuthForm({ mode }: { mode: "signup" | "login" }) {
         <button
           type="submit"
           disabled={pending}
-          className="mt-6 w-full rounded-full bg-ink py-2.5 text-sm font-medium text-paper hover:bg-accent disabled:opacity-60"
+          className="mt-6 w-full rounded-full bg-accent py-2.5 text-sm font-medium text-white hover:bg-accent-hover disabled:opacity-60"
         >
           {pending ? copy.pending : copy.button}
         </button>

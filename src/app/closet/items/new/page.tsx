@@ -14,7 +14,7 @@ export default async function NewItemPage() {
   return (
     <section>
       <p className="label">New item</p>
-      <h1 className="mt-1 mb-8 text-3xl font-medium tracking-tight">Add to your closet</h1>
+      <h1 className="mt-1 mb-8 text-3xl font-display">Add to your closet</h1>
       <ItemForm action={createItem} categories={categories ?? []} cancelHref="/closet" />
     </section>
   );

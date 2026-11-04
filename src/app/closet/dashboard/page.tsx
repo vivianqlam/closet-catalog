@@ -22,7 +22,7 @@ export default async function DashboardPage() {
   return (
     <section>
       <p className="label">Dashboard</p>
-      <h1 className="mt-1 text-3xl font-medium tracking-tight">Your wardrobe at a glance</h1>
+      <h1 className="mt-1 text-3xl font-display">Your wardrobe at a glance</h1>
 
       <dl className="mt-8 grid gap-px border border-line bg-line sm:grid-cols-3">
         <div className="bg-paper p-5">
