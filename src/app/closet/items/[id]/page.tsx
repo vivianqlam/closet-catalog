@@ -47,6 +47,8 @@ export default async function ItemPage({ params, searchParams }: PageProps<"/clo
             uploadedSrc={item.photo_path && photoUrls.get(item.photo_path)}
             linkSrc={item.photo_url}
             color={item.color}
+            category={item.category_id}
+            name={item.name}
             alt={item.name}
             size="lg"
           />

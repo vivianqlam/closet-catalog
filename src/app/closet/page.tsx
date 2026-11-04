@@ -157,7 +157,10 @@ export default async function ClosetPage({ searchParams }: PageProps<"/closet">)
                     uploadedSrc={item.photo_path && photoUrls.get(item.photo_path)}
                     linkSrc={item.photo_url}
                     color={item.color}
+                    category={item.category_id}
+                    name={item.name}
                     alt=""
+                    addPhotoHint
                   />
                 </div>
                 <p className="mt-3 text-sm font-medium group-hover:text-accent">{item.name}</p>
