@@ -73,6 +73,8 @@ export default async function SharedTripPage({ params }: PageProps<"/share/[toke
                   uploadedSrc={item.photo_path && photoUrls.get(item.photo_path)}
                   linkSrc={item.photo_url}
                   color={item.color}
+                  category={item.category}
+                  name={item.name}
                   alt={item.name}
                 />
               </div>

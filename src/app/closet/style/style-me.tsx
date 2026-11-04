@@ -76,7 +76,7 @@ export function StyleMe({ items }: { items: StyleItem[] }) {
                   {item ? (
                     <>
                       <div className="relative mx-auto flex aspect-square w-full max-w-32 items-center sm:max-w-40 justify-center overflow-hidden bg-tile">
-                        <ItemImage uploadedSrc={item.photoSrc} linkSrc={item.photo_url} color={item.color} alt="" />
+                        <ItemImage uploadedSrc={item.photoSrc} linkSrc={item.photo_url} color={item.color} category={item.category_id} name={item.name} alt="" />
                       </div>
                       <div className="mt-2 text-center">
                         <Link
