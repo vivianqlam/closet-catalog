@@ -47,12 +47,25 @@ export async function updateItem(
   if (!result.ok) return { error: FIX_FIELDS, errors: result.errors, values };
 
   const supabase = await createClient();
-  const { error } = await supabase.from("items").update(result.row).eq("id", id);
+  const { data: saved, error } = await supabase
+    .from("items")
+    .update(result.row)
+    .eq("id", id)
+    .select("id, photo_path")
+    .single();
 
   if (error) return { error: "Couldn't save your changes. Please try again.", values };
 
+  // A new photo picked on the Edit form replaces the old one. If it fails,
+  // the other changes are still saved and the item page says so.
+  const photo = formData.get("photo");
+  let photoFailed = false;
+  if (photo instanceof File && photo.size > 0) {
+    photoFailed = Boolean((await savePhoto(supabase, saved, photo)).error);
+  }
+
   revalidatePath("/closet");
-  redirect(`/closet/items/${id}`);
+  redirect(`/closet/items/${id}${photoFailed ? "?photo=failed" : ""}`);
 }
 
 export async function deleteItem(id: string) {

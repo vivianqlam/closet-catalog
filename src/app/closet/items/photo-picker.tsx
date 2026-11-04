@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { Area } from "react-easy-crop";
-import { CropDialog, cropToFile } from "./crop-dialog";
+import { CropDialog, cropToFile, padToSquare } from "./crop-dialog";
 import { UNREADABLE_PHOTO, openPhoto, shrink } from "./photo-tools";
 
 export type PickedPhoto = { file: File; preview: string };
@@ -12,9 +12,11 @@ export type PickedPhoto = { file: File; preview: string };
 export function PhotoPicker({
   value,
   onChange,
+  currentSrc,
 }: {
   value: PickedPhoto | null;
   onChange: (photo: PickedPhoto | null) => void;
+  currentSrc?: string | null; // the item's photo now, when editing
 }) {
   const fileInput = useRef<HTMLInputElement>(null);
   const [cropping, setCropping] = useState<{ file: File; src: string } | null>(null);
@@ -42,7 +44,7 @@ export function PhotoPicker({
     setCropping(null);
     setWorking(true);
     try {
-      const chosen = area ? await cropToFile(file, src, area) : file;
+      const chosen = area ? await cropToFile(file, src, area) : await padToSquare(file, src);
       const small = await shrink(chosen);
       const ready = new File([small], small.name || "photo", { type: small.type });
       if (value) URL.revokeObjectURL(value.preview);
@@ -79,9 +81,9 @@ export function PhotoPicker({
       <p className="label">Photo (optional)</p>
       <div className="mt-2 flex items-center gap-4">
         <div className="relative flex size-24 shrink-0 items-center justify-center overflow-hidden bg-tile">
-          {value ? (
-            // eslint-disable-next-line @next/next/no-img-element -- local preview of the picked photo
-            <img src={value.preview} alt="Selected photo" className="absolute inset-0 size-full object-cover" />
+          {value || currentSrc ? (
+            // eslint-disable-next-line @next/next/no-img-element -- local preview, or the item's current photo
+            <img src={value?.preview ?? currentSrc!} alt={value ? "Selected photo" : "Current photo"} className="absolute inset-0 size-full object-contain" />
           ) : (
             <span className="text-xs text-muted">{working ? "Preparing…" : "No photo"}</span>
           )}
@@ -97,7 +99,7 @@ export function PhotoPicker({
             onChange={(event) => onPick(event.target.files?.[0])}
           />
           <label htmlFor="new-photo" className={`${buttonClass} cursor-pointer`}>
-            {value ? "Change photo" : "Add photo"}
+            {value || currentSrc ? "Change photo" : "Add photo"}
           </label>
           {value && (
             <button type="button" onClick={remove} className={`${buttonClass} text-accent`}>

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Category, Item } from "@/lib/types";
+import { signedPhotoUrls } from "@/lib/photos";
 import { updateItem } from "../../actions";
 import { ItemForm } from "../../item-form";
 
@@ -12,6 +13,8 @@ export default async function EditItemPage({ params }: PageProps<"/closet/items/
     supabase.from("categories").select("*").order("sort_order").returns<Category[]>(),
   ]);
   if (!item) notFound();
+  const photoUrls = await signedPhotoUrls(supabase, [item.photo_path]);
+  const currentPhotoSrc = (item.photo_path && photoUrls.get(item.photo_path)) || item.photo_url;
 
   return (
     <section>
@@ -21,6 +24,7 @@ export default async function EditItemPage({ params }: PageProps<"/closet/items/
         action={updateItem.bind(null, item.id)}
         categories={categories ?? []}
         item={item}
+        currentPhotoSrc={currentPhotoSrc}
         cancelHref={`/closet/items/${item.id}`}
       />
     </section>

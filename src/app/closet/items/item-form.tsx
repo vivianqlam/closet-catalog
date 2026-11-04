@@ -14,15 +14,17 @@ export function ItemForm({
   action,
   categories,
   item,
+  currentPhotoSrc,
   cancelHref,
 }: {
   action: (prev: ItemFormState, formData: FormData) => Promise<ItemFormState>;
   categories: Category[];
   item?: Item;
+  currentPhotoSrc?: string | null; // when editing, the photo the item has now
   cancelHref: string;
 }) {
-  // New items can include a photo, picked and cropped here and sent along
-  // with the form. (Existing items change their photo on the item page.)
+  // A photo picked and cropped here is sent along with the form: the first
+  // photo for a new item, or a replacement when editing.
   const [photo, setPhoto] = useState<PickedPhoto | null>(null);
   // The save step reads the photo from here: the function given to
   // useActionState is kept from the first render, so it would otherwise
@@ -36,7 +38,7 @@ export function ItemForm({
   // Count save attempts so the form can be redrawn after each one (see key below).
   const [state, formAction, pending] = useActionState(
     async (prev: ItemFormState & { attempt: number }, formData: FormData) => {
-      if (photoRef.current && !item) formData.set("photo", photoRef.current.file);
+      if (photoRef.current) formData.set("photo", photoRef.current.file);
       return { ...(await action(prev, formData)), attempt: prev.attempt + 1 };
     },
     { attempt: 0 },
@@ -53,7 +55,7 @@ export function ItemForm({
     // key: React clears a form after each save attempt, and dropdowns would lose their
     // choice, so a failed save redraws the form filled with what was typed.
     <form key={state.attempt} action={formAction} noValidate className="grid max-w-xl gap-5">
-      {!item && <PhotoPicker value={photo} onChange={choosePhoto} />}
+      <PhotoPicker value={photo} onChange={choosePhoto} currentSrc={currentPhotoSrc} />
 
       <Field field="name" label="Name *" error={state.errors?.name}>
         <input {...fieldProps("name")} required placeholder="Navy wool coat" />
@@ -124,7 +126,7 @@ export function ItemForm({
           disabled={pending}
           className="rounded-full bg-accent px-6 py-2.5 text-sm font-medium text-white hover:bg-accent-hover disabled:opacity-60"
         >
-          {pending ? (photo && !item ? "Saving item and photo…" : "Saving…") : "Save item"}
+          {pending ? (photo ? "Saving item and photo…" : "Saving…") : "Save item"}
         </button>
         <Link href={cancelHref} className="rounded-full border border-line px-6 py-2.5 text-sm hover:border-ink">
           Cancel
