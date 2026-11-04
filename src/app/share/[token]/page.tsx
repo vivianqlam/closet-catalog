@@ -53,7 +53,7 @@ export default async function SharedTripPage({ params }: PageProps<"/share/[toke
 
       <div className="mt-10">
         <p className="label">Here&apos;s what I&apos;m packing{details.length ? ` · ${details.join(" · ")}` : ""}</p>
-        <h1 className="mt-1 text-4xl font-medium tracking-tight">{trip.name}</h1>
+        <h1 className="mt-1 text-4xl font-display">{trip.name}</h1>
         {(trip.destination || dates) && (
           <p className="mt-2 text-muted">{[trip.destination, dates].filter(Boolean).join(" · ")}</p>
         )}

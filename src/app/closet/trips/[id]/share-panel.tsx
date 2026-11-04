@@ -32,7 +32,7 @@ export function SharePanel({ tripId, shareUrl }: { tripId: string; shareUrl: str
           type="button"
           disabled={pending}
           onClick={() => startTransition(() => (shareUrl ? stopSharing(tripId) : startSharing(tripId)))}
-          className={shareUrl ? `${buttonClass} text-accent` : "rounded-full bg-ink px-4 py-1.5 text-sm font-medium text-paper hover:bg-accent disabled:opacity-60"}
+          className={shareUrl ? `${buttonClass} text-accent` : "rounded-full bg-accent px-4 py-1.5 text-sm font-medium text-white hover:bg-accent-hover disabled:opacity-60"}
         >
           {pending ? "Saving…" : shareUrl ? "Turn off link" : "Create share link"}
         </button>

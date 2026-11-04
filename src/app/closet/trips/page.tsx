@@ -17,10 +17,10 @@ export default async function TripsPage() {
   return (
     <section>
       <div className="flex items-end justify-between gap-4">
-        <h1 className="text-3xl font-medium tracking-tight">Your trips</h1>
+        <h1 className="text-3xl font-display">Your trips</h1>
         <Link
           href="/closet/trips/new"
-          className="rounded-full bg-ink px-4 py-1.5 text-sm font-medium whitespace-nowrap text-paper hover:bg-accent"
+          className="rounded-full bg-accent px-4 py-1.5 text-sm font-medium whitespace-nowrap text-white hover:bg-accent-hover"
         >
           + New trip
         </Link>
@@ -31,7 +31,7 @@ export default async function TripsPage() {
           <p className="text-muted">Plan a trip and build its packing list from your closet.</p>
           <Link
             href="/closet/trips/new"
-            className="mt-4 inline-block rounded-full bg-ink px-5 py-2 text-sm font-medium text-paper hover:bg-accent"
+            className="mt-4 inline-block rounded-full bg-accent px-5 py-2 text-sm font-medium text-white hover:bg-accent-hover"
           >
             Plan your first trip
           </Link>

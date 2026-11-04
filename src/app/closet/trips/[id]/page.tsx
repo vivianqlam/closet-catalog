@@ -75,7 +75,7 @@ export default async function TripPage({ params, searchParams }: PageProps<"/clo
       <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="label">{details.join(" · ") || "Trip"}</p>
-          <h1 className="mt-1 text-3xl font-medium tracking-tight">{trip.name}</h1>
+          <h1 className="mt-1 text-3xl font-display">{trip.name}</h1>
           {(trip.destination || dates) && (
             <p className="mt-1 text-muted">{[trip.destination, dates].filter(Boolean).join(" · ")}</p>
           )}

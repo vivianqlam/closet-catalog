@@ -75,8 +75,10 @@ export default async function ClosetPage({ searchParams }: PageProps<"/closet">)
   return (
     <section>
       <div className="flex items-end justify-between gap-4">
-        <h1 className="text-3xl font-medium tracking-tight">Your closet</h1>
-        <p className="label" aria-live="polite">
+        <h1 className="font-display text-3xl leading-tight sm:text-4xl">
+          What are we <span className="highlight">wearing</span> today?
+        </h1>
+        <p className="label shrink-0 bg-blush px-2 py-0.5 !text-ink" aria-live="polite">
           {narrowed || filters.category || filters.starred
             ? `Showing ${shown.length} of ${total}`
             : `${total} ${total === 1 ? "item" : "items"}`}
@@ -93,7 +95,7 @@ export default async function ClosetPage({ searchParams }: PageProps<"/closet">)
             href={tab.href}
             aria-current={tab.active ? "page" : undefined}
             className={`label -mb-px shrink-0 border-b-2 px-3 py-2 ${
-              tab.active ? "border-ink !text-ink" : "border-transparent hover:!text-ink"
+              tab.active ? "border-accent !text-ink" : "border-transparent hover:!text-ink"
             }`}
           >
             {tab.label} <span className="ml-1 opacity-60">{tab.count}</span>
@@ -123,7 +125,7 @@ export default async function ClosetPage({ searchParams }: PageProps<"/closet">)
             !filters.starred && (
               <Link
                 href="/closet/items/new"
-                className="mt-4 inline-block rounded-full bg-ink px-5 py-2 text-sm font-medium text-paper hover:bg-accent"
+                className="mt-4 inline-block rounded-full bg-accent px-5 py-2 text-sm font-medium text-white hover:bg-accent-hover"
               >
                 {total === 0 ? "Add your first piece" : "Add an item"}
               </Link>

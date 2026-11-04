@@ -16,7 +16,7 @@ export default async function EditItemPage({ params }: PageProps<"/closet/items/
   return (
     <section>
       <p className="label">Edit item</p>
-      <h1 className="mt-1 mb-8 text-3xl font-medium tracking-tight">{item.name}</h1>
+      <h1 className="mt-1 mb-8 text-3xl font-display">{item.name}</h1>
       <ItemForm
         action={updateItem.bind(null, item.id)}
         categories={categories ?? []}

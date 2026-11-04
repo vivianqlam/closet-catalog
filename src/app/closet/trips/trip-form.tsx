@@ -87,7 +87,7 @@ export function TripForm({
         <button
           type="submit"
           disabled={pending}
-          className="rounded-full bg-ink px-6 py-2.5 text-sm font-medium text-paper hover:bg-accent disabled:opacity-60"
+          className="rounded-full bg-accent px-6 py-2.5 text-sm font-medium text-white hover:bg-accent-hover disabled:opacity-60"
         >
           {pending ? "Saving…" : "Save trip"}
         </button>
