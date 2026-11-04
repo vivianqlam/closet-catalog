@@ -26,6 +26,11 @@ describe("style me", () => {
     expect(outfitRows(closet, true).shoes.map((i) => i.id)).toEqual(["loafers"]);
   });
 
+  it("puts bags and other accessories in their own row", () => {
+    expect(outfitRows(closet, false).accessory.map((i) => i.id)).toEqual(["scarf"]);
+    expect(outfitRows(closet, true).top.map((i) => i.id)).not.toContain("scarf");
+  });
+
   it("wraps the arrows around both ends", () => {
     expect(stepIndex(2, 1, 3)).toBe(0);
     expect(stepIndex(0, -1, 3)).toBe(2);

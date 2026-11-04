@@ -5,22 +5,28 @@ import { useState } from "react";
 import { outfitRows, randomIndex, stepIndex, type StyleItem } from "@/lib/style";
 import { ItemImage } from "../item-image";
 
-type RowKey = "top" | "bottom" | "shoes";
+type RowKey = "top" | "bottom" | "shoes" | "accessory";
 const ROWS: { key: RowKey; label: string; empty: string }[] = [
   { key: "top", label: "Top", empty: "No tops yet." },
   { key: "bottom", label: "Bottom", empty: "No bottoms yet." },
   { key: "shoes", label: "Shoes", empty: "No shoes yet." },
+  { key: "accessory", label: "Accessory", empty: "No accessories yet." },
 ];
+// A match needs these; the accessory is a bonus.
+const REQUIRED: RowKey[] = ["top", "bottom", "shoes"];
 
-// The interactive part of "Style me": three rows you flip through with arrows.
+// The interactive part of "Style me": rows you flip through with arrows.
 export function StyleMe({ items }: { items: StyleItem[] }) {
   const [includeOuterwear, setIncludeOuterwear] = useState(false);
-  const [picks, setPicks] = useState<Record<RowKey, number>>({ top: 0, bottom: 0, shoes: 0 });
+  const [includeAccessory, setIncludeAccessory] = useState(true);
+  const [picks, setPicks] = useState<Record<RowKey, number>>({ top: 0, bottom: 0, shoes: 0, accessory: 0 });
   const [matched, setMatched] = useState(false);
 
   const rows = outfitRows(items, includeOuterwear);
-  const current = (key: RowKey) => rows[key][picks[key]];
-  const complete = ROWS.every(({ key }) => current(key));
+  const current = (key: RowKey) =>
+    key === "accessory" && !includeAccessory ? undefined : rows[key][picks[key]];
+  const complete = REQUIRED.every((key) => current(key));
+  const look = ROWS.map(({ key }) => current(key)).filter((item) => item !== undefined);
 
   function step(key: RowKey, by: number) {
     setPicks((p) => ({ ...p, [key]: stepIndex(p[key], by, rows[key].length) }));
@@ -32,6 +38,7 @@ export function StyleMe({ items }: { items: StyleItem[] }) {
       top: randomIndex(rows.top.length, p.top),
       bottom: randomIndex(rows.bottom.length, p.bottom),
       shoes: randomIndex(rows.shoes.length, p.shoes),
+      accessory: randomIndex(rows.accessory.length, p.accessory),
     }));
     setMatched(false);
   }
@@ -64,12 +71,26 @@ export function StyleMe({ items }: { items: StyleItem[] }) {
                     Include outerwear
                   </label>
                 )}
+                {key === "accessory" && (
+                  <label className="label flex cursor-pointer items-center gap-1.5">
+                    <input
+                      type="checkbox"
+                      checked={includeAccessory}
+                      onChange={(e) => {
+                        setIncludeAccessory(e.target.checked);
+                        setMatched(false);
+                      }}
+                      className="accent-accent"
+                    />
+                    Add an accessory
+                  </label>
+                )}
               </div>
               <div className="mt-2 flex items-center gap-3">
                 <ArrowButton
                   direction="previous"
                   label={label}
-                  disabled={list.length < 2}
+                  disabled={list.length < 2 || (key === "accessory" && !includeAccessory)}
                   onClick={() => step(key, -1)}
                 />
                 <div className="min-w-0 flex-1" aria-live="polite">
@@ -91,13 +112,15 @@ export function StyleMe({ items }: { items: StyleItem[] }) {
                       </div>
                     </>
                   ) : (
-                    <p className="py-8 text-center text-sm text-muted">{empty}</p>
+                    <p className="py-8 text-center text-sm text-muted">
+                      {key === "accessory" && !includeAccessory ? "No accessory this time." : empty}
+                    </p>
                   )}
                 </div>
                 <ArrowButton
                   direction="next"
                   label={label}
-                  disabled={list.length < 2}
+                  disabled={list.length < 2 || (key === "accessory" && !includeAccessory)}
                   onClick={() => step(key, 1)}
                 />
               </div>
@@ -129,7 +152,7 @@ export function StyleMe({ items }: { items: StyleItem[] }) {
           <div className="bg-blush px-4 py-3 text-center">
             <p className="font-display text-2xl leading-tight">As if! It&apos;s a match ♡</p>
             <p className="mt-1 text-sm">
-              {current("top").name} + {current("bottom").name} + {current("shoes").name}
+              {look.map((item) => item!.name).join(" + ")}
             </p>
           </div>
         )}

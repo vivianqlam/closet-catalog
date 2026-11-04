@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { signedPhotoUrls } from "@/lib/photos";
 import {
+  ACCESSORY_CATEGORY,
   BOTTOM_CATEGORY,
   OUTERWEAR_CATEGORY,
   SHOES_CATEGORY,
@@ -20,7 +21,7 @@ export default async function StylePage() {
   const { data } = await supabase
     .from("items")
     .select("id, name, brand, color, category_id, photo_path, photo_url")
-    .in("category_id", [TOP_CATEGORY, BOTTOM_CATEGORY, OUTERWEAR_CATEGORY, SHOES_CATEGORY])
+    .in("category_id", [TOP_CATEGORY, BOTTOM_CATEGORY, OUTERWEAR_CATEGORY, SHOES_CATEGORY, ACCESSORY_CATEGORY])
     .order("created_at", { ascending: false })
     .returns<Row[]>();
 
