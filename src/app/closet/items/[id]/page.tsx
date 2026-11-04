@@ -42,7 +42,7 @@ export default async function ItemPage({ params, searchParams }: PageProps<"/clo
       </Link>
 
       <div className="mt-4 grid border border-line md:grid-cols-[1fr_380px]">
-        <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-tile md:aspect-auto md:min-h-[480px]">
+        <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-mist md:aspect-auto md:min-h-[480px]">
           <ItemImage
             uploadedSrc={item.photo_path && photoUrls.get(item.photo_path)}
             linkSrc={item.photo_url}

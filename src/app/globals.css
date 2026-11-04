@@ -11,7 +11,8 @@
   --accent-hover: #8a1c30;
   --ballet: #f4c6cf;
   --blush: #f7d3da;
-  --tile: #ebe5da;
+  --tile: #efe6e2; /* rose stone: neutral with a pink undertone */
+  --mist: #f3e4e3; /* blush mist: for special spots, like the item photo */
 }
 
 @theme inline {
@@ -24,6 +25,7 @@
   --color-ballet: var(--ballet);
   --color-blush: var(--blush);
   --color-tile: var(--tile);
+  --color-mist: var(--mist);
   --font-sans: var(--font-instrument-sans);
   --font-display: var(--font-shrikhand);
 }

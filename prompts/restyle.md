@@ -22,6 +22,10 @@ The agent opened Issue #37 and branch `feature/oxblood-restyle`:
 - Item page: Times worn sits in a ballet-pink bordered card with a big bubbly number.
 - Dashboard chart bars match the new oxblood.
 
+> **Me:** do we think the tan behind the items go with the soft pink?
+
+The old tan tiles leaned yellow next to the pink. The agent mocked five tile colors with my real clothes; I picked **rose stone** (#efe6e2) for the grid and **blush mist** (#f3e4e3) for special spots (the big photo on the item page). Because my photos had the tan baked in, the agent re-cut all 70 as see-through PNGs so any tile color shows through.
+
 ## Things that went sideways
 
 - **The dev server had been running since Oct 29** and didn't pick up the changes, so the agent restarted it.
