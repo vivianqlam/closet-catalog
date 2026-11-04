@@ -3,8 +3,8 @@
 import { useActionState, useRef, useState, useTransition } from "react";
 import type { Area } from "react-easy-crop";
 import { removePhoto, setPhotoUrl, uploadPhoto, type PhotoState } from "../photo-actions";
-import { CropDialog, cropToFile, padToSquare } from "../crop-dialog";
-import { UNREADABLE_PHOTO, openPhoto, shrink } from "../photo-tools";
+import { CropDialog } from "../crop-dialog";
+import { BACKGROUND_FAILED, UNREADABLE_PHOTO, openPhoto, preparePhoto } from "../photo-tools";
 
 export function PhotoControls({ itemId, hasPhoto }: { itemId: string; hasPhoto: boolean }) {
   const fileInput = useRef<HTMLInputElement>(null);
@@ -42,18 +42,21 @@ export function PhotoControls({ itemId, hasPhoto }: { itemId: string; hasPhoto: 
     }
   };
 
-  const onCropped = (area: Area | null) => {
+  const [stage, setStage] = useState("Uploading…");
+  const onCropped = (area: Area | null, removeBg: boolean) => {
     if (!picked) return;
     const { file, src } = picked;
     setPicked(null);
     startUpload(async () => {
       try {
-        const chosen = area ? await cropToFile(file, src, area) : await padToSquare(file, src);
-        const small = await shrink(chosen);
+        setStage(removeBg ? "Removing background…" : "Uploading…");
+        const { file: small, backgroundFailed } = await preparePhoto(file, src, area, removeBg);
+        setStage("Uploading…");
         const formData = new FormData();
         formData.set("photo", small, small.name || "photo");
         const result = await uploadPhoto(itemId, formData);
         if (result.error) setUploadError(result.error);
+        else if (backgroundFailed) setUploadError(BACKGROUND_FAILED);
       } catch {
         setUploadError(UNREADABLE_PHOTO);
       } finally {
@@ -82,7 +85,7 @@ export function PhotoControls({ itemId, hasPhoto }: { itemId: string; hasPhoto: 
           onChange={(event) => onPick(event.target.files?.[0])}
         />
         <label htmlFor="photo-file" className={`${buttonClass} cursor-pointer ${busy ? "pointer-events-none opacity-60" : ""}`}>
-          {uploading ? "Uploading…" : hasPhoto ? "Replace photo" : "Upload photo"}
+          {uploading ? stage : hasPhoto ? "Replace photo" : "Upload photo"}
         </label>
         <button type="button" disabled={busy} onClick={() => setShowLink((open) => !open)} className={buttonClass}>
           Paste image link

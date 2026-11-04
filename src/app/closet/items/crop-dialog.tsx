@@ -80,10 +80,11 @@ export function CropDialog({
   onCancel,
 }: {
   src: string;
-  onDone: (area: Area | null) => void;
+  onDone: (area: Area | null, removeBg: boolean) => void;
   onCancel: () => void;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const [removeBg, setRemoveBg] = useState(true);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [area, setArea] = useState<Area | null>(null);
@@ -139,17 +140,32 @@ export function CropDialog({
         />
       </label>
 
+      <label className="mt-4 flex cursor-pointer items-start gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={removeBg}
+          onChange={(event) => setRemoveBg(event.target.checked)}
+          className="mt-0.5 accent-accent"
+        />
+        <span>
+          Remove background
+          <span className="block text-xs text-muted">
+            Cuts the piece out so it matches the rest of your closet. The first time takes a minute.
+          </span>
+        </span>
+      </label>
+
       <div className="mt-5 flex flex-wrap justify-end gap-2">
         <button type="button" onClick={onCancel} className={buttonClass}>
           Cancel
         </button>
-        <button type="button" onClick={() => onDone(null)} className={buttonClass}>
+        <button type="button" onClick={() => onDone(null, removeBg)} className={buttonClass}>
           Use whole photo
         </button>
         <button
           type="button"
           disabled={!area}
-          onClick={() => onDone(area)}
+          onClick={() => onDone(area, removeBg)}
           className="rounded-full bg-accent px-5 py-2 text-sm font-medium text-white hover:bg-accent-hover disabled:opacity-60"
         >
           Save photo
