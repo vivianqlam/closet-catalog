@@ -3,7 +3,7 @@
 import { useActionState, useRef, useState, useTransition } from "react";
 import type { Area } from "react-easy-crop";
 import { removePhoto, setPhotoUrl, uploadPhoto, type PhotoState } from "../photo-actions";
-import { CropDialog, cropToFile } from "../crop-dialog";
+import { CropDialog, cropToFile, padToSquare } from "../crop-dialog";
 import { UNREADABLE_PHOTO, openPhoto, shrink } from "../photo-tools";
 
 export function PhotoControls({ itemId, hasPhoto }: { itemId: string; hasPhoto: boolean }) {
@@ -48,7 +48,7 @@ export function PhotoControls({ itemId, hasPhoto }: { itemId: string; hasPhoto: 
     setPicked(null);
     startUpload(async () => {
       try {
-        const chosen = area ? await cropToFile(file, src, area) : file;
+        const chosen = area ? await cropToFile(file, src, area) : await padToSquare(file, src);
         const small = await shrink(chosen);
         const formData = new FormData();
         formData.set("photo", small, small.name || "photo");
