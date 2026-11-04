@@ -85,6 +85,21 @@ export default async function ClosetPage({ searchParams }: PageProps<"/closet">)
         </p>
       </div>
 
+      <Link
+        href="/closet/style"
+        className="group mt-5 flex items-center justify-between gap-4 border-3 border-ballet bg-white/60 px-4 py-3 hover:border-accent"
+      >
+        <p className="text-sm">
+          Need an idea?{" "}
+          <span className="font-display text-lg">
+            <span className="highlight">Style</span> me
+          </span>
+        </p>
+        <span aria-hidden className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent text-white group-hover:bg-accent-hover">
+          →
+        </span>
+      </Link>
+
       {/* key: redraw the bar when the address changes (e.g. after "Clear"). */}
       <FilterBar key={closetHref(filters, {})} filters={filters} />
 
