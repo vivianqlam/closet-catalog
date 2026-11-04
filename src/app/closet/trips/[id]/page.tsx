@@ -109,7 +109,7 @@ export default async function TripPage({ params, searchParams }: PageProps<"/clo
           </div>
           {onTrip.length > 0 && (
             <div className="mt-2 h-1 bg-tile" aria-hidden>
-              <div className="h-full bg-ink transition-all" style={{ width: `${(packedCount / onTrip.length) * 100}%` }} />
+              <div className="h-full bg-accent transition-all" style={{ width: `${(packedCount / onTrip.length) * 100}%` }} />
             </div>
           )}
 

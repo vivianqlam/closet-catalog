@@ -1,7 +1,7 @@
 # Handoff notes
 
 A running status file for whoever (person or AI agent) picks this project up next.
-Last updated: Oct 30, 2026. Demo Day: **Wed Nov 4, 2026**.
+Last updated: Nov 4, 2026. Demo Day: **Wed Nov 4, 2026**.
 
 Read this first, then [PLAN.md](PLAN.md) (the original plan; never edit it, only append the Plan vs Reality table at the bottom) and the per-feature logs in [prompts/](prompts/).
 
@@ -9,7 +9,7 @@ Read this first, then [PLAN.md](PLAN.md) (the original plan; never edit it, only
 
 Build Closet Catalog the professional way:
 - **Workflow for every change:** GitHub Issue → feature branch → build → `prompts/<feature>.md` log → PR that says "closes #N" → merge → Vercel deploys main.
-- No direct commits to `main`. At least 9 merged PRs (we have 14).
+- No direct commits to `main`. At least 9 merged PRs (we have 22).
 - 7 spine features plus 3 custom ones (photo upload, trip packing lists, share link). At least 5 real entries on the live site.
 - 2 tests (data isolation; a dashboard stat). Each needs a plain-English explanation, a red and a green screenshot, and a "what would break it" note.
 - Also needed: `schema.md`, `README.md`, a Plan vs Reality table appended to PLAN.md, and a reflection.
@@ -40,30 +40,31 @@ Build Closet Catalog the professional way:
 | #24 | Read-only share links for packing lists | prompts/share-link.md |
 | #26 | Optional photo on the Add item form | prompts/photo-on-add.md |
 | #30 | Tests: data isolation + dashboard stat | prompts/tests.md |
+| #32 | schema.md (database docs) | prompts/schema.md |
+| #34, #36 | Activewear category + real closet import | prompts/import.md |
+| #38 | Restyle: oxblood + ballet pink, Shrikhand headlines, rose stone tiles | prompts/restyle.md |
+| #40 | Style me outfit builder | prompts/style-me.md |
+| #42 | Line drawings for items without a photo | prompts/photo-placeholders.md |
+| #44 | README, Plan vs Reality, oxblood packed bars | (this PR) |
 
 All five SQL migrations in `supabase/migrations/` (0001–0005) have been run on the live database. 0005 (Activewear category, Issue #33) was run on Nov 3, 2026.
 
-**Real closet import (Issue #33): done Nov 3, 2026.** Vivian chose 74 items to keep (out of 114 from Instinct's 5-year purchase list). They're in her live closet: 59 have store photos, cut out onto the app's beige tile, and 15 have no photo yet. Her app account uses her **Berkeley** email, not her personal one. The import SQL, photos and HOW-TO are in `imports/closet-2026-11/`, which is git-ignored because this repo is public. Never commit that folder.
+**Real closet (Issues #33 and later):** 85 pieces in her live closet: 74 kept from Instinct's 5-year purchase list plus 11 added from links and screenshots. 71 have see-through cut-out photos (`<item id>-cut.png` in her storage folder); 14 show line drawings until she adds her own photos. A sample **Maui** trip (Oct 15–19, 22 pieces, all packed) is under Trips. Her app account uses her **Berkeley** email, not her personal one. The import SQL, photos and HOW-TO are in `imports/closet-2026-11/`, which is git-ignored because this repo is public. Never commit that folder.
 
 ## Tests: done (PR #30, Issue #27)
 
-- Run them with `npm test` (9 tests). The isolation test needs `.env.test.local`.
+- Run them with `npm test` (12 tests, including Style me's row logic). The isolation test needs `.env.test.local`.
 - Write-ups with red/green screenshots: [docs/tests.md](docs/tests.md). Screenshots: `docs/screenshots/`. Prompt log: [prompts/tests.md](prompts/tests.md).
 - The isolation red run used a TEMP "any logged-in user can read items" policy on Oct 30. It was dropped right after, and the green run (4 passed) confirmed it was gone.
 
 ## Still to do
 
 - [x] `schema.md` (Issue #31, branch `docs/schema`). Note: `users.display_name` exists but isn't used by the app.
-- [ ] `README.md` (doesn't exist yet): what the app is, the live URL, tools used, how to run (`npm install`, `.env.local`, `npm run dev`, `npm test`). Credit the design: the look is adapted from the MIT-licensed tandpfun/wardrobe repo.
-- [ ] **Plan vs Reality table** appended to PLAN.md. Items to include:
-  - the wardrobe look replaced the planned palette/font ("Changed")
-  - added the crop step
-  - added the photo on the Add form
-  - photo links as well as uploads
-  - the share-link trade-off: while a trip is shared, its photos are readable by anyone with the link
-- [ ] Vivian adds 5+ real items on the **live** site from her phone.
-- [ ] Help with the reflection; prep for Demo Day.
-- [ ] Each of the docs above goes through the same Issue → branch → PR flow.
+- [x] `README.md` and the **Plan vs Reality** table at the bottom of PLAN.md (Issue #43).
+- [x] Real items on the live site: 85 imported (see above).
+- [ ] Reflection: waiting on the class prompt from Vivian.
+- [ ] Demo Day prep (Wed Nov 4, 2026).
+- [ ] Ideas for later: a lookbook that saves "It's a match!" outfits; a "wore this outfit" button; photos for the 14 pieces still showing line drawings.
 
 ## Tech notes (things that will trip you up)
 

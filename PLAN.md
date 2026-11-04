@@ -149,3 +149,22 @@ erDiagram
   2. Share link, replaced by the "Copy packing list" text fallback
   3. The "packed" checkbox on trips (trips stay as plain lists)
   4. Photo compression (upload photos as-is with a size limit)
+
+## Plan vs Reality
+
+*Added Nov 4, 2026, after the build. Everything above this line is the original plan, unchanged.*
+
+| Planned | What happened | Status |
+|---|---|---|
+| 7 spine features: sign up, data model, items, validation, stars, find things, dashboard | All built, one PR each (#4–#16) | Built as planned |
+| Photo upload from the phone, shrunk in the browser, private bucket | Built (#18). Also added a **crop step** so photos show just the clothing (#21), and a photo picker right on the Add form (#26) | Built, plus extras |
+| Photos are uploads only | Each item can also use a **link to a store's product photo** instead of an upload (#18) | Changed |
+| Trip packing lists | Built (#22), with suggestions based on the trip's climate | Built as planned |
+| Share link via a server-side lookup by `share_token` | Built (#24) as two small database functions. **Trade-off:** while a trip is shared, someone technical could open its photos without the link; turning sharing off hides them again (see [schema.md](schema.md)) | Built, with a known trade-off |
+| 6 categories | Added a 7th, **Activewear**, once my real closet had 25 workout pieces (#34) | Changed |
+| Outfit suggester (stretch, cut first) | Built as **Style me**: flip through tops, bottoms and shoes, or "Surprise me" (#40). Saving outfits to a lookbook is still a later idea | Built (was backlog) |
+| Items show a photo when there is one | Pieces without a photo show a **line drawing** of what they are, with an "Add photo" hint (#42) | Added |
+| At least 5 real items on the live site | Imported **85** pieces from five years of order emails (via Instinct), after a keep-or-toss checklist, with cut-out store photos | Exceeded |
+| Design: linen, charcoal, terracotta and sage; serif headings (Fraunces) and Inter | First switched to the neutral look of [tandpfun/wardrobe](https://github.com/tandpfun/wardrobe) (MIT). After trying many palettes with my real clothes, landed on **oxblood + ballet pink**, rose stone photo tiles, **Shrikhand** bubbly headlines and Instrument Sans (#38) | Changed |
+| 2 tests: data isolation, dashboard stat | Both built with red/green screenshots (#30). Style me's row logic got tests too (#40) | Built, plus extras |
+| At least 9 merged PRs | 22 merged PRs | Exceeded |
