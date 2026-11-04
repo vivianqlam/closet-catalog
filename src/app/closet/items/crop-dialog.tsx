@@ -39,6 +39,7 @@ export async function padToSquare(file: File, src: string): Promise<File> {
   const ctx = canvas.getContext("2d")!;
 
   // Average a small patch in each corner to guess the background color.
+  // A see-through photo keeps its see-through corners instead (Issue #50).
   const probe = document.createElement("canvas");
   probe.width = w;
   probe.height = h;
@@ -47,18 +48,22 @@ export async function padToSquare(file: File, src: string): Promise<File> {
   const patch = Math.max(1, Math.round(Math.min(w, h) * 0.02));
   const totals = [0, 0, 0];
   let count = 0;
+  let seeThrough = false;
   for (const [x, y] of [[0, 0], [w - patch, 0], [0, h - patch], [w - patch, h - patch]]) {
     const data = pctx.getImageData(x, y, patch, patch).data;
     for (let i = 0; i < data.length; i += 4) {
+      if (data[i + 3] < 250) seeThrough = true;
       totals[0] += data[i];
       totals[1] += data[i + 1];
       totals[2] += data[i + 2];
       count++;
     }
   }
-  const [r, g, b] = totals.map((t) => Math.round(t / count));
-  ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-  ctx.fillRect(0, 0, side, side);
+  if (!seeThrough) {
+    const [r, g, b] = totals.map((t) => Math.round(t / count));
+    ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+    ctx.fillRect(0, 0, side, side);
+  }
   ctx.drawImage(image, Math.round((side - w) / 2), Math.round((side - h) / 2));
 
   const type = file.type === "image/png" || file.type === "image/webp" ? file.type : "image/jpeg";
@@ -75,10 +80,11 @@ export function CropDialog({
   onCancel,
 }: {
   src: string;
-  onDone: (area: Area | null) => void;
+  onDone: (area: Area | null, removeBg: boolean) => void;
   onCancel: () => void;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const [removeBg, setRemoveBg] = useState(true);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [area, setArea] = useState<Area | null>(null);
@@ -134,17 +140,32 @@ export function CropDialog({
         />
       </label>
 
+      <label className="mt-4 flex cursor-pointer items-start gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={removeBg}
+          onChange={(event) => setRemoveBg(event.target.checked)}
+          className="mt-0.5 accent-accent"
+        />
+        <span>
+          Remove background
+          <span className="block text-xs text-muted">
+            Cuts the piece out so it matches the rest of your closet. The first time takes a minute.
+          </span>
+        </span>
+      </label>
+
       <div className="mt-5 flex flex-wrap justify-end gap-2">
         <button type="button" onClick={onCancel} className={buttonClass}>
           Cancel
         </button>
-        <button type="button" onClick={() => onDone(null)} className={buttonClass}>
+        <button type="button" onClick={() => onDone(null, removeBg)} className={buttonClass}>
           Use whole photo
         </button>
         <button
           type="button"
           disabled={!area}
-          onClick={() => onDone(area)}
+          onClick={() => onDone(area, removeBg)}
           className="rounded-full bg-accent px-5 py-2 text-sm font-medium text-white hover:bg-accent-hover disabled:opacity-60"
         >
           Save photo

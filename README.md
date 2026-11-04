@@ -26,6 +26,7 @@ Built by Vivian Lam for Intro to Coding (MBA, Fall 2026), with Claude Code as th
 | [Tailwind CSS 4](https://tailwindcss.com) | Styling |
 | [Recharts](https://recharts.org) | Dashboard chart |
 | react-easy-crop, browser-image-compression | Cropping and shrinking photos before upload |
+| [@imgly/background-removal](https://github.com/imgly/background-removal-js) (AGPL-3.0) | Cutting the clothing out of photos, in the browser |
 | [Vitest](https://vitest.dev) | Tests |
 | [Vercel](https://vercel.com) | Hosting; deploys `main` automatically |
 | [Claude Code](https://claude.com/claude-code) | Coding agent |

@@ -2,8 +2,8 @@
 
 import { useRef, useState } from "react";
 import type { Area } from "react-easy-crop";
-import { CropDialog, cropToFile, padToSquare } from "./crop-dialog";
-import { UNREADABLE_PHOTO, openPhoto, shrink } from "./photo-tools";
+import { CropDialog } from "./crop-dialog";
+import { BACKGROUND_FAILED, UNREADABLE_PHOTO, openPhoto, preparePhoto } from "./photo-tools";
 
 export type PickedPhoto = { file: File; preview: string };
 
@@ -20,7 +20,7 @@ export function PhotoPicker({
 }) {
   const fileInput = useRef<HTMLInputElement>(null);
   const [cropping, setCropping] = useState<{ file: File; src: string } | null>(null);
-  const [working, setWorking] = useState(false);
+  const [working, setWorking] = useState<string | null>(null);
   const [error, setError] = useState<string>();
 
   const reset = () => {
@@ -38,14 +38,14 @@ export function PhotoPicker({
     }
   };
 
-  const onCropped = async (area: Area | null) => {
+  const onCropped = async (area: Area | null, removeBg: boolean) => {
     if (!cropping) return;
     const { file, src } = cropping;
     setCropping(null);
-    setWorking(true);
+    setWorking(removeBg ? "Removing background…" : "Preparing…");
     try {
-      const chosen = area ? await cropToFile(file, src, area) : await padToSquare(file, src);
-      const small = await shrink(chosen);
+      const { file: small, backgroundFailed } = await preparePhoto(file, src, area, removeBg);
+      if (backgroundFailed) setError(BACKGROUND_FAILED);
       const ready = new File([small], small.name || "photo", { type: small.type });
       if (value) URL.revokeObjectURL(value.preview);
       onChange({ file: ready, preview: URL.createObjectURL(ready) });
@@ -53,7 +53,7 @@ export function PhotoPicker({
       setError(UNREADABLE_PHOTO);
     } finally {
       URL.revokeObjectURL(src);
-      setWorking(false);
+      setWorking(null);
       reset();
     }
   };
@@ -85,7 +85,7 @@ export function PhotoPicker({
             // eslint-disable-next-line @next/next/no-img-element -- local preview, or the item's current photo
             <img src={value?.preview ?? currentSrc!} alt={value ? "Selected photo" : "Current photo"} className="absolute inset-0 size-full object-contain" />
           ) : (
-            <span className="text-xs text-muted">{working ? "Preparing…" : "No photo"}</span>
+            <span className="px-1 text-center text-xs text-muted">{working ?? "No photo"}</span>
           )}
         </div>
         <div className="flex flex-wrap gap-2">
