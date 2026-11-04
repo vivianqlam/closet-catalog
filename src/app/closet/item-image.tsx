@@ -22,9 +22,11 @@ export function ItemImage({
   addPhotoHint?: boolean; // show "+ Add photo" on the drawing (closet grid)
 }) {
   if (uploadedSrc) {
-    // Phone photos fill the tile.
+    // Fit the whole photo inside the tile. Cropped photos are square and fill
+    // it; "Use whole photo" keeps the full shape, so the tile color shows
+    // around it instead of the edges being cut off (Issue #46).
     // eslint-disable-next-line @next/next/no-img-element -- signed links from a private bucket
-    return <img src={uploadedSrc} alt={alt} className="absolute inset-0 size-full object-cover" />;
+    return <img src={uploadedSrc} alt={alt} className="absolute inset-0 size-full object-contain" />;
   }
   if (linkSrc) {
     // Product shots are usually on white; "multiply" drops the white into the
