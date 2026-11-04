@@ -56,7 +56,7 @@ export default async function TripsPage() {
                       .join(" · ") || "No dates yet"}
                   </p>
                   <div className="mt-4 h-1 bg-tile" aria-hidden>
-                    <div className="h-full bg-ink" style={{ width: total ? `${(packed / total) * 100}%` : 0 }} />
+                    <div className="h-full bg-accent" style={{ width: total ? `${(packed / total) * 100}%` : 0 }} />
                   </div>
                   <p className="label mt-2">
                     {total === 0 ? "Nothing on the list yet" : `${packed} of ${total} packed`}
