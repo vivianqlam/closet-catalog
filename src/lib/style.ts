@@ -5,6 +5,7 @@ export const TOP_CATEGORY = 1;
 export const BOTTOM_CATEGORY = 2;
 export const OUTERWEAR_CATEGORY = 4;
 export const SHOES_CATEGORY = 5;
+export const ACCESSORY_CATEGORY = 6;
 
 export type StyleItem = {
   id: string;
@@ -16,14 +17,15 @@ export type StyleItem = {
   photo_url: string | null; // product image link
 };
 
-// Splits the closet into the three rows. Outerwear joins the Top row only
-// when it's switched on.
+// Splits the closet into the rows. Outerwear joins the Top row only when it's
+// switched on; the Accessory row (bags, caps…) is optional (Issue #56).
 export function outfitRows(items: StyleItem[], includeOuterwear: boolean) {
   const topIds = includeOuterwear ? [TOP_CATEGORY, OUTERWEAR_CATEGORY] : [TOP_CATEGORY];
   return {
     top: items.filter((item) => topIds.includes(item.category_id)),
     bottom: items.filter((item) => item.category_id === BOTTOM_CATEGORY),
     shoes: items.filter((item) => item.category_id === SHOES_CATEGORY),
+    accessory: items.filter((item) => item.category_id === ACCESSORY_CATEGORY),
   };
 }
 
