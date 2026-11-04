@@ -39,6 +39,7 @@ export async function padToSquare(file: File, src: string): Promise<File> {
   const ctx = canvas.getContext("2d")!;
 
   // Average a small patch in each corner to guess the background color.
+  // A see-through photo keeps its see-through corners instead (Issue #50).
   const probe = document.createElement("canvas");
   probe.width = w;
   probe.height = h;
@@ -47,18 +48,22 @@ export async function padToSquare(file: File, src: string): Promise<File> {
   const patch = Math.max(1, Math.round(Math.min(w, h) * 0.02));
   const totals = [0, 0, 0];
   let count = 0;
+  let seeThrough = false;
   for (const [x, y] of [[0, 0], [w - patch, 0], [0, h - patch], [w - patch, h - patch]]) {
     const data = pctx.getImageData(x, y, patch, patch).data;
     for (let i = 0; i < data.length; i += 4) {
+      if (data[i + 3] < 250) seeThrough = true;
       totals[0] += data[i];
       totals[1] += data[i + 1];
       totals[2] += data[i + 2];
       count++;
     }
   }
-  const [r, g, b] = totals.map((t) => Math.round(t / count));
-  ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-  ctx.fillRect(0, 0, side, side);
+  if (!seeThrough) {
+    const [r, g, b] = totals.map((t) => Math.round(t / count));
+    ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+    ctx.fillRect(0, 0, side, side);
+  }
   ctx.drawImage(image, Math.round((side - w) / 2), Math.round((side - h) / 2));
 
   const type = file.type === "image/png" || file.type === "image/webp" ? file.type : "image/jpeg";

@@ -1,5 +1,14 @@
 import { ItemSketch } from "./item-sketch";
 
+// The file name is in the link's path, before any "?token=…".
+function isPng(src: string) {
+  try {
+    return new URL(src).pathname.toLowerCase().endsWith(".png");
+  } catch {
+    return false;
+  }
+}
+
 // What fills an item's tile: an uploaded photo, a product image link, or
 // (with neither) a line drawing of the piece. The parent must be "relative".
 export function ItemImage({
@@ -22,11 +31,13 @@ export function ItemImage({
   addPhotoHint?: boolean; // show "+ Add photo" on the drawing (closet grid)
 }) {
   if (uploadedSrc) {
-    // Fit the whole photo inside the tile. Cropped photos are square and fill
-    // it; "Use whole photo" keeps the full shape, so the tile color shows
-    // around it instead of the edges being cut off (Issue #46).
+    // Fit the whole photo inside the tile (Issue #46). Photos with a solid
+    // background are blended into the tile, so white melts into the tile color
+    // and light gray becomes a slightly deeper tone (Issue #50). See-through
+    // PNGs (our cut-outs) already show the tile, so they're left as they are.
+    const blend = isPng(uploadedSrc) ? "" : " mix-blend-multiply";
     // eslint-disable-next-line @next/next/no-img-element -- signed links from a private bucket
-    return <img src={uploadedSrc} alt={alt} className="absolute inset-0 size-full object-contain" />;
+    return <img src={uploadedSrc} alt={alt} className={`absolute inset-0 size-full object-contain${blend}`} />;
   }
   if (linkSrc) {
     // Product shots are usually on white; "multiply" drops the white into the
